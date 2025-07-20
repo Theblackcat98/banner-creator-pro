@@ -1,6 +1,7 @@
-import React from 'react';
-import { BannerSettings } from '../types';
-import { HORIZONTAL_ALIGN_OPTIONS, PREDEFINED_ICONS, VERTICAL_ALIGN_OPTIONS } from '../constants';
+import React, { useState } from 'react';
+import { BannerSettings, Gradient } from '../types';
+import { HORIZONTAL_ALIGN_OPTIONS, VERTICAL_ALIGN_OPTIONS, PREDEFINED_ICONS } from '../constants';
+import { Download, Upload } from 'lucide-react';
 import { Input, Select, ColorPicker } from './ui';
 
 interface ControlPanelProps {
@@ -27,8 +28,22 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ settings, onSettings
     onSettingsChange({ [name]: processedValue });
   };
   
+  const [gradients, setGradients] = useState<{
+    backgroundColor?: Gradient;
+    outlineColor?: Gradient;
+    fontColor?: Gradient;
+  }>({});
+
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onSettingsChange({ [e.target.name]: e.target.value });
+  };
+
+  const handleGradientChange = (name: 'backgroundColor' | 'outlineColor' | 'fontColor', gradient: Gradient) => {
+    setGradients(prev => ({
+      ...prev,
+      [name]: gradient
+    }));
+    onSettingsChange({ [name]: gradient });
   };
 
   const handleIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,14 +84,30 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ settings, onSettings
         </div>
         <Input label="Corner Radius (px)" type="number" name="cornerRadius" value={settings.cornerRadius} onChange={handleChange} min="0" max="200" />
         {settings.theme === 'default' && (
-            <ColorPicker label="Background Color" name="backgroundColor" value={settings.backgroundColor} onChange={handleColorChange} />
+            <ColorPicker 
+            label="Background Color" 
+            name="backgroundColor" 
+            value={typeof settings.backgroundColor === 'string' ? settings.backgroundColor : settings.backgroundColor.stops[0]?.color || '#000000'} 
+            onChange={handleColorChange}
+            onGradientChange={(gradient) => handleGradientChange('backgroundColor', gradient)}
+            gradientValue={typeof settings.backgroundColor !== 'string' ? settings.backgroundColor : undefined}
+            showGradientPicker
+          />
         )}
       </ControlSection>
       
       {settings.theme === 'default' && (
         <>
           <ControlSection title="Outline">
-            <ColorPicker label="Color" name="outlineColor" value={settings.outlineColor} onChange={handleColorChange} />
+            <ColorPicker 
+              label="Color" 
+              name="outlineColor" 
+              value={typeof settings.outlineColor === 'string' ? settings.outlineColor : settings.outlineColor.stops[0]?.color || '#000000'} 
+              onChange={handleColorChange}
+              onGradientChange={(gradient) => handleGradientChange('outlineColor', gradient)}
+              gradientValue={typeof settings.outlineColor !== 'string' ? settings.outlineColor : undefined}
+              showGradientPicker
+            />
             <Input label="Thickness (px)" type="number" name="outlineThickness" value={settings.outlineThickness} onChange={handleChange} min="0" max="50" />
           </ControlSection>
 
@@ -85,8 +116,12 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ settings, onSettings
                   {Object.keys(PREDEFINED_ICONS).map(key => <option key={key} value={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</option>)}
               </Select>
               <div>
-                  <label className="block text-sm font-medium text-[#8b949e]">Upload Custom SVG</label>
-                  <input type="file" accept="image/svg+xml" onChange={handleIconUpload} className="mt-1 block w-full text-sm text-[#8b949e] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#21262d] file:text-[#c9d1d9] hover:file:bg-[#30363d] cursor-pointer"/>
+                  <label className="block text-sm font-medium text-[#8b949e] mb-1">Upload Custom SVG</label>
+                  <label className="flex items-center justify-center px-4 py-2 bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] rounded-md cursor-pointer text-sm font-medium">
+                      <Upload className="w-4 h-4 mr-2" />
+                      Choose File
+                      <input type="file" accept="image/svg+xml" onChange={handleIconUpload} className="hidden" />
+                  </label>
               </div>
           </ControlSection>
         </>
@@ -109,7 +144,15 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ settings, onSettings
         <Input label="Size (px)" type="number" name="fontSize" value={settings.fontSize} onChange={handleChange} min="1" />
         {settings.theme === 'default' && (
           <>
-            <ColorPicker label="Color" name="fontColor" value={settings.fontColor} onChange={handleColorChange} />
+            <ColorPicker 
+              label="Color" 
+              name="fontColor" 
+              value={typeof settings.fontColor === 'string' ? settings.fontColor : settings.fontColor.stops[0]?.color || '#000000'} 
+              onChange={handleColorChange}
+              onGradientChange={(gradient) => handleGradientChange('fontColor', gradient)}
+              gradientValue={typeof settings.fontColor !== 'string' ? settings.fontColor : undefined}
+              showGradientPicker
+            />
             <Input label="Google Font" type="text" name="fontFamily" value={settings.fontFamily} onChange={handleChange} placeholder="e.g. Roboto"/>
             <div className="grid grid-cols-2 gap-4">
                 <Select label="Horizontal Align" name="textAlign" value={settings.textAlign} onChange={handleChange}>

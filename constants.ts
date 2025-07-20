@@ -20,16 +20,58 @@ export const PREDEFINED_ICONS: Record<string, string> = {
   react: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-11.5 -10.23174 23 20.46348" fill="currentColor"><circle cx="0" cy="0" r="2.05" fill="#61dafb"/><g stroke="#61dafb" stroke-width="1" fill="none"><ellipse rx="11" ry="4.2"/><ellipse rx="11" ry="4.2" transform="rotate(60)"/><ellipse rx="11" ry="4.2" transform="rotate(120)"/></g></svg>`,
 };
 
+export const GRADIENT_PRESETS = {
+  'GitHub Dark': {
+    type: 'linear' as const,
+    angle: 135,
+    stops: [
+      { color: '#0d1117', position: 0 },
+      { color: '#161b22', position: 100 }
+    ]
+  },
+  'Sunset': {
+    type: 'linear' as const,
+    angle: 45,
+    stops: [
+      { color: '#ff758c', position: 0 },
+      { color: '#ff7eb3', position: 100 }
+    ]
+  },
+  'Ocean': {
+    type: 'linear' as const,
+    angle: 45,
+    stops: [
+      { color: '#00c6fb', position: 0 },
+      { color: '#005bea', position: 100 }
+    ]
+  },
+  'Sunrise': {
+    type: 'radial' as const,
+    angle: 0,
+    stops: [
+      { color: '#ff7e5f', position: 0 },
+      { color: '#feb47b', position: 100 }
+    ]
+  }
+};
+
 export const DEFAULT_BANNER_SETTINGS: BannerSettings = {
   width: 1200,
   height: 630,
-  backgroundColor: '#161b22', // GitHub panel dark grey
+  backgroundColor: GRADIENT_PRESETS['GitHub Dark'],
   cornerRadius: 12,
-  outlineColor: '#58a6ff', // GitHub blue
+  outlineColor: {
+    type: 'linear',
+    angle: 90,
+    stops: [
+      { color: '#58a6ff', position: 0 },
+      { color: '#1f6feb', position: 100 }
+    ]
+  },
   outlineThickness: 8,
   fontFamily: 'Roboto',
   fontSize: 72,
-  fontColor: '#e6edf3', // GitHub light text
+  fontColor: '#e6edf3',
   text: 'Hello World!\nWelcome to the Banner Creator.',
   textAlign: 'center',
   verticalAlign: 'middle',
