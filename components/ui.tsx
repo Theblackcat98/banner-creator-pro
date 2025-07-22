@@ -74,9 +74,23 @@ const GradientPreview: React.FC<{ gradient: Gradient; className?: string }> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    const gradientObj = gradient.type === 'linear'
-      ? ctx.createLinearGradient(0, 0, canvas.width, 0)
-      : ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 2);
+    let gradientObj: CanvasGradient;
+    if (gradient.type === 'linear') {
+      const angleRad = (gradient.angle * Math.PI) / 180;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const length = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height, 2));
+      const dx = Math.cos(angleRad) * length / 2;
+      const dy = Math.sin(angleRad) * length / 2;
+      gradientObj = ctx.createLinearGradient(
+        centerX - dx,
+        centerY - dy,
+        centerX + dx,
+        centerY + dy
+      );
+    } else {
+      gradientObj = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 2);
+    }
     
     gradient.stops.forEach(stop => {
       gradientObj.addColorStop(stop.position / 100, stop.color);
