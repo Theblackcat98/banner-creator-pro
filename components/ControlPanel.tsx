@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BannerSettings, Gradient } from '../types';
 import { HORIZONTAL_ALIGN_OPTIONS, VERTICAL_ALIGN_OPTIONS, PREDEFINED_ICONS } from '../constants';
 import { Download, Upload } from 'lucide-react';
@@ -28,21 +28,32 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ settings, onSettings
     onSettingsChange({ [name]: processedValue });
   };
   
-  const [gradients, setGradients] = useState<{
-    backgroundColor?: Gradient;
-    outlineColor?: Gradient;
-    fontColor?: Gradient;
-  }>({});
-
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onSettingsChange({ [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const colorKey = name as 'backgroundColor' | 'outlineColor' | 'fontColor';
+    
+    // Get the current value from settings
+    const currentValue = settings[colorKey];
+    
+    // Check if it's a gradient
+    if (typeof currentValue !== 'string' && 'stops' in currentValue) {
+      // It's a gradient, update the first stop
+      const gradient = {
+        ...currentValue,
+        stops: [...currentValue.stops]
+      };
+      
+      if (gradient.stops.length > 0) {
+        gradient.stops[0] = { ...gradient.stops[0], color: value };
+        onSettingsChange({ [name]: gradient });
+      }
+    } else {
+      // It's a solid color, update directly
+      onSettingsChange({ [name]: value });
+    }
   };
 
   const handleGradientChange = (name: 'backgroundColor' | 'outlineColor' | 'fontColor', gradient: Gradient) => {
-    setGradients(prev => ({
-      ...prev,
-      [name]: gradient
-    }));
     onSettingsChange({ [name]: gradient });
   };
 
