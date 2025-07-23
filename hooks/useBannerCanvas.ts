@@ -298,129 +298,6 @@ const drawOSWindow = (ctx: CanvasRenderingContext2D, settings: BannerSettings) =
         const gridX1 = localPadding;
         const gridX2 = width / 2;
         
-        // Enhanced neofetch-style ASCII art
-        const asciiArt = [
-            '                    -`                   ',
-            '                   .o+`                  ',
-            '                  `ooo/                  ',
-            '                 `+oooo:                 ',
-            '                `+oooooo:                ',
-            '                -+oooooo+:               ',
-            '              `/:-:++oooo+:              ',
-            '             `/++++/+++++++:             ',
-            '            `/++++++++++++++:            ',
-            '           `/+++ooooooooooooo/`          ',
-            '          ./ooosssso++osssssso+`         ',
-            '         .oossssso-````/ossssss+`        ',
-            '        -osssssso.      :ssssssso.       ',
-            '       :osssssss/        osssso+++.      ',
-            '      /ossssssss/        +ssssooo/-      ',
-            '    `/ossssso+/:-        -:/+osssso+-    ',
-            '   `+sso+:-`                 `.-/+oso:   ',
-            '  `++:.                           `-/+/   ',
-            '  .`                                 `/   ',
-        ];
-        
-        // System information with detailed mock data
-        const systemInfo = [
-            { 
-                label: 'OS', 
-                value: 'Arch Linux x86_64', 
-                color: uiColors.accent,
-                icon: '💠' // Diamond for OS
-            },
-            { 
-                label: 'Host', 
-                value: 'banner-creator-pro', 
-                color: uiColors.success,
-                icon: '💻' // Laptop for host
-            },
-            { 
-                label: 'Kernel', 
-                value: '6.4.0-arch1-1', 
-                color: uiColors.warning,
-                icon: '⚙️'  // Gear for kernel
-            },
-            { 
-                label: 'Uptime', 
-                value: '2 hours, 45 mins', 
-                color: uiColors.info,
-                icon: '⏱️'  // Stopwatch for uptime
-            },
-            { 
-                label: 'Packages', 
-                value: '1243 (pacman)', 
-                color: uiColors.error,
-                icon: '📦'  // Package for packages
-            },
-            { 
-                label: 'Shell', 
-                value: 'zsh 5.9', 
-                color: uiColors.accent,
-                icon: '🐚'  // Shell icon
-            },
-            { 
-                label: 'Resolution', 
-                value: '1920x1080', 
-                color: uiColors.success,
-                icon: '🖥️'  // Desktop computer for resolution
-            },
-            { 
-                label: 'WM', 
-                value: 'i3-gaps', 
-                color: uiColors.warning,
-                icon: '🪟'  // Window for WM
-            },
-            { 
-                label: 'Theme', 
-                value: 'Catppuccin-Macchiato', 
-                color: uiColors.info,
-                icon: '🎨'  // Artist palette for theme
-            },
-            { 
-                label: 'Icons', 
-                value: 'Papirus-Dark [GTK2/3]', 
-                color: uiColors.error,
-                icon: '🖌️'  // Paintbrush for icons
-            },
-            { 
-                label: 'Terminal', 
-                value: 'alacritty', 
-                color: uiColors.accent,
-                icon: '⌨️'  // Keyboard for terminal
-            },
-            { 
-                label: 'CPU', 
-                value: 'Intel i7-10750H (12) @ 5.000GHz', 
-                color: uiColors.success,
-                icon: '⚡'  // Zap for CPU
-            },
-            { 
-                label: 'GPU', 
-                value: 'NVIDIA GeForce RTX 3060 Mobile', 
-                color: uiColors.warning,
-                icon: '🎮'  // Game controller for GPU
-            },
-            { 
-                label: 'Memory', 
-                value: '12GB / 32GB', 
-                color: uiColors.info,
-                icon: '💾'  // Floppy disk for memory
-            },
-            { 
-                label: 'Disk', 
-                value: '1.2TB / 2.0TB (60%)', 
-                color: uiColors.error,
-                icon: '💽'  // Computer disk for storage
-            },
-            { 
-                label: 'Battery', 
-                value: '87%', 
-                color: uiColors.accent,
-                icon: '🔋'  // Battery for battery status
-            }
-        ];
-        
         // Group system info into columns for better layout
         const infoColumns = [
             systemInfo.slice(0, 6),  // First column with 6 items
@@ -627,7 +504,7 @@ const columnX = gridX1 + colIndex * (columnWidth + columnGap);
         });
         
         // Draw cursor
-        const cursorY = headerHeight + localPadding * 2 + asciiArt.length * scaledAsciiLineHeight + systemInfo.length * rowHeight + 10;
+
         if (currentY < height - localPadding) {
             ctx.fillStyle = promptColor;
             ctx.fillText('❯', localPadding, currentY);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BannerSettings, Gradient } from '../types';
 import { HORIZONTAL_ALIGN_OPTIONS, VERTICAL_ALIGN_OPTIONS, PREDEFINED_ICONS } from '../constants';
-import { Download, Upload } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { Input, Select, ColorPicker } from './ui';
 
 interface ControlPanelProps {
