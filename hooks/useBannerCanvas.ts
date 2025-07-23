@@ -294,6 +294,33 @@ const drawOSWindow = (ctx: CanvasRenderingContext2D, settings: BannerSettings) =
         ctx.fillText(' ' + text, localPadding + 20, currentY);
         currentY += lineHeight * 1.5;
         
+        // System information to display
+        const systemInfo: Array<{label: string, value: string}> = [
+            { label: 'OS:', value: 'Linux' },
+            { label: 'Host:', value: 'banner-creator' },
+            { label: 'Kernel:', value: '6.1.0' },
+            { label: 'Uptime:', value: '2h 30m' },
+            { label: 'Shell:', value: 'zsh' },
+            { label: 'Resolution:', value: '1920x1080' },
+            { label: 'DE:', value: 'GNOME' },
+            { label: 'WM:', value: 'Mutter' },
+            { label: 'Theme:', value: 'Catppuccin' },
+            { label: 'Terminal:', value: 'Alacritty' },
+            { label: 'CPU:', value: 'CPU' },
+            { label: 'GPU:', value: 'GPU' },
+            { label: 'Memory:', value: '16GB' }
+        ];
+
+        // ASCII art to display
+        const asciiArt: string[] = [
+            '   /\\___/\\',
+            '  /       \\',
+            ' /  O   O  \\',
+            '|           |',
+            ' \\  \\___/  /',
+            '  \\_______/'
+        ];
+
         // Draw system info in a grid
         const gridX1 = localPadding;
         const gridX2 = width / 2;
@@ -304,18 +331,6 @@ const drawOSWindow = (ctx: CanvasRenderingContext2D, settings: BannerSettings) =
             systemInfo.slice(6, 12), // Second column with 6 items
             systemInfo.slice(12)     // Third column with remaining items
         ].filter(column => column.length > 0); // Remove empty columns
-        
-        // Color codes for the blocks (Catppuccin Macchiato colors)
-        const blockColors = [
-            '#5B6078', // Dark gray
-            '#ED8796', // Red
-            '#A6DA95', // Green
-            '#EED49F', // Yellow
-            '#8AADF4', // Blue
-            '#F5BDE6', // Magenta
-            '#91D7E3', // Cyan
-            '#CAD3F5'  // White
-        ];
         
         // Update the color scheme for the terminal content
         bodyTextColor = uiColors.text;
@@ -329,12 +344,12 @@ const drawOSWindow = (ctx: CanvasRenderingContext2D, settings: BannerSettings) =
         const asciiLineHeight = 16; // Slightly more space between lines
         const charWidth = 8;   // Approximate width of a monospace character
         const maxAsciiHeight = Math.min(asciiArt.length * asciiLineHeight, height - currentY - 120);
-        const asciiScale = Math.min(1, maxAsciiHeight / (asciiArt.length * asciiLineHeight));
+        const asciiScale = Math.min(1, asciiArt.length > 0 ? maxAsciiHeight / (asciiArt.length * asciiLineHeight) : 1);
         const scaledAsciiLineHeight = asciiLineHeight * asciiScale;
         
         // Calculate the maximum width for the ASCII art to prevent overflow
         const maxAsciiWidth = Math.min(
-            Math.max(...asciiArt.map(line => line.length * charWidth)),
+            asciiArt.length > 0 ? Math.max(...asciiArt.map((line: string) => line.length * charWidth)) : 0,
             gridX2 - gridX1 - 40 // Leave some margin on the right
         );
         
@@ -379,7 +394,7 @@ const drawOSWindow = (ctx: CanvasRenderingContext2D, settings: BannerSettings) =
         const rowHeight = 20; // Slightly more space between rows
         
         // Initialize currentY for the first column
-        let currentColumnY = currentY + asciiArt.length * scaledAsciiLineHeight + 20;
+        let currentColumnY = currentY + (asciiArt.length > 0 ? asciiArt.length * scaledAsciiLineHeight + 20 : 20);
         
         // Calculate the maximum label width for alignment
         ctx.font = 'bold 12px "Fira Code", "Cascadia Code", "JetBrains Mono", monospace';
@@ -393,8 +408,8 @@ const drawOSWindow = (ctx: CanvasRenderingContext2D, settings: BannerSettings) =
         maxLabelWidth = Math.min(maxLabelWidth, 120); // Cap the max label width
         
         // Draw each column
-        infoColumns.forEach((column, colIndex) => {
-const columnX = gridX1 + colIndex * (columnWidth + columnGap);
+        infoColumns.forEach((column: Array<{label: string, value: string, icon?: string, color?: string}>, colIndex: number) => {
+            const columnX = gridX1 + colIndex * (columnWidth + columnGap);
             let currentY = currentColumnY;
             
             // Draw column background with subtle border
@@ -425,34 +440,19 @@ const columnX = gridX1 + colIndex * (columnWidth + columnGap);
                 ctx.textAlign = 'left';
                 ctx.textBaseline = 'middle';
                 
-                // Draw icon
-                if (info.icon) {
-                    ctx.font = '14px monospace'; // For emoji icons
-                    ctx.fillStyle = info.color;
-                    ctx.fillText(info.icon, columnX, currentY + 1);
-                }
-                
                 // Draw label with fixed width for alignment
-                ctx.font = 'bold 12px "Fira Code", "Cascadia Code", "JetBrains Mono", monospace';
-                const labelX = columnX + 20; // Space for icon
-                const labelText = `${info.label}:`;
+                const labelX = columnX;
+                const labelText = `${info.label}`;
                 
-                // Add a subtle glow to the label
-                ctx.shadowColor = `${info.color}80`;
-                ctx.shadowBlur = 4;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 0;
-                
-                ctx.fillStyle = info.color;
+                // Draw the label
+                ctx.fillStyle = uiColors.textMuted || '#8087A2';
                 ctx.fillText(labelText, labelX, currentY);
                 
                 // Draw the value with a different color
                 ctx.font = '12px "Fira Code", "Cascadia Code", "JetBrains Mono", monospace';
-                ctx.fillStyle = uiColors.text;
-                ctx.shadowColor = 'transparent';
                 
                 // Calculate the x position for the value (right-aligned with some padding)
-                const valueX = labelX + maxLabelWidth + 15;
+                const valueX = columnX + maxLabelWidth + 15;
                 
                 // Truncate value if it's too long
                 const maxValueWidth = columnX + columnWidth - valueX - 5;
@@ -472,30 +472,8 @@ const columnX = gridX1 + colIndex * (columnWidth + columnGap);
                     }
                 }
                 
-                // Add a subtle highlight background for the value
-                const valueMetricsFinal = ctx.measureText(displayValue);
-                ctx.fillStyle = `${uiColors.surface0}80`;
-                const padding = 2;
-                const valueBgHeight = 16;
-                const valueBgY = currentY - valueBgHeight / 2 + 1;
-                
-                // Draw rounded rectangle for value background
-                const bgRadius = 3;
-                ctx.beginPath();
-                ctx.moveTo(valueX - padding + bgRadius, valueBgY);
-                ctx.arcTo(valueX - padding + valueMetricsFinal.width + padding * 2, valueBgY, 
-                         valueX - padding + valueMetricsFinal.width + padding * 2, valueBgY + valueBgHeight, bgRadius);
-                ctx.arcTo(valueX - padding + valueMetricsFinal.width + padding * 2, valueBgY + valueBgHeight, 
-                         valueX - padding, valueBgY + valueBgHeight, bgRadius);
-                ctx.arcTo(valueX - padding, valueBgY + valueBgHeight, 
-                         valueX - padding, valueBgY, bgRadius);
-                ctx.arcTo(valueX - padding, valueBgY, 
-                         valueX - padding + valueMetricsFinal.width + padding * 2, valueBgY, bgRadius);
-                ctx.closePath();
-                ctx.fill();
-                
                 // Draw the value text
-                ctx.fillStyle = uiColors.text;
+                ctx.fillStyle = uiColors.text || '#CAD3F5';
                 ctx.fillText(displayValue, valueX, currentY);
                 
                 // Move to the next line

@@ -1,8 +1,7 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { BannerSettings } from '../types';
 import { useBannerCanvas } from '../hooks/useBannerCanvas';
 import { Download } from 'lucide-react';
-import { Button } from './ui';
 
 interface CanvasPreviewProps {
   settings: BannerSettings;
